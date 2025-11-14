@@ -1,1230 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amazon PPC Analyzer - Optimize Your Advertising</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PPC Analyzer - Amazon Advertising Analytics</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React and ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel Standalone for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Recharts -->
+  <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
+  
+  <!-- SheetJS (xlsx) -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    #root {
+      min-height: 100vh;
+    }
+    
+    /* Loading spinner */
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
-    <div id="root"></div>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    // Initialize Supabase client
+    const { createClient } = supabase;
+    const SUPABASE_URL = 'https://qlqqdrnddwtzguqgtrub.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFscXFkcm5kZHd0emd1cWd0cnViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwNjIyMzMsImV4cCI6MjA3ODYzODIzM30.UllszW_ETPYHNGBjOKPR6wJD4lHQZPiQ-vJCF9h8wWc';
     
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+    
+    // Export Supabase client globally for the App component to use
+    window.supabaseClient = supabaseClient;
+    
+    // Make Recharts components available globally
+    const { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
+    window.Recharts = { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer };
+    
+    // Make XLSX available globally
+    window.XLSX = XLSX;
+    
+    // Create Lucide React components
+    const createLucideIcon = (iconName) => {
+      return (props) => {
+        const ref = React.useRef(null);
+        React.useEffect(() => {
+          if (ref.current) {
+            lucide.createIcons({
+              icons: { [iconName]: lucide[iconName] },
+              attrs: {
+                ...props,
+                'stroke-width': props.strokeWidth || 2,
+              },
+            });
+          }
+        }, []);
+        return React.createElement('i', { 
+          ref, 
+          'data-lucide': iconName,
+          ...props 
+        });
+      };
+    };
+    
+    // Export Lucide icons
+    window.LucideIcons = {
+      Upload: createLucideIcon('upload'),
+      TrendingUp: createLucideIcon('trending-up'),
+      TrendingDown: createLucideIcon('trending-down'),
+      DollarSign: createLucideIcon('dollar-sign'),
+      Target: createLucideIcon('target'),
+      MousePointer: createLucideIcon('mouse-pointer'),
+      AlertTriangle: createLucideIcon('alert-triangle'),
+      CheckCircle: createLucideIcon('check-circle'),
+      XCircle: createLucideIcon('x-circle'),
+      Filter: createLucideIcon('filter'),
+      Search: createLucideIcon('search'),
+      Download: createLucideIcon('download'),
+      ChevronDown: createLucideIcon('chevron-down'),
+      ChevronRight: createLucideIcon('chevron-right'),
+      ArrowUpDown: createLucideIcon('arrow-up-down'),
+      Settings: createLucideIcon('settings'),
+      Loader2: createLucideIcon('loader-2'),
+      FileSpreadsheet: createLucideIcon('file-spreadsheet'),
+    };
+  </script>
+  
+  <!-- Load App.js -->
+  <script type="text/babel" src="./App.js"></script>
+  
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    
+    // Main component wrapper to handle Supabase auth state
+    function AppWrapper() {
+      const [loading, setLoading] = useState(true);
+      const [session, setSession] = useState(null);
+      
+      useEffect(() => {
+        // Get initial session
+        supabaseClient.auth.getSession().then(({ data: { session } }) => {
+          setSession(session);
+          setLoading(false);
+        });
         
-        const SUPABASE_URL = 'https://qlqqdrnddwtzguqgtrub.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFscXFkcm5kZHd0emd1cWd0cnViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwNjIyMzMsImV4cCI6MjA3ODYzODIzM30.UllszW_ETPYHNGBjOKPR6wJD4lHQZPiQ-vJCF9h8wWc';
+        // Listen for auth changes
+        const {
+          data: { subscription },
+        } = supabaseClient.auth.onAuthStateChange((_event, session) => {
+          setSession(session);
+        });
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        function AmazonPPCAnalyzer() {
-            const [view, setView] = useState('landing'); // landing, auth, dashboard, upload, analysis
-            const [activeTab, setActiveTab] = useState('overview');
-            const [currentAnalysis, setCurrentAnalysis] = useState(null);
-            const [savedAnalyses, setSavedAnalyses] = useState([]);
-            const [loading, setLoading] = useState(false);
-            const [uploadProgress, setUploadProgress] = useState(0);
-            const [authView, setAuthView] = useState('login');
-            const [user, setUser] = useState(null);
-            const [email, setEmail] = useState('');
-            const [password, setPassword] = useState('');
-            const [marketingConsent, setMarketingConsent] = useState(true);
-            const [error, setError] = useState('');
-            const [authLoading, setAuthLoading] = useState(false);
-            const [analysisName, setAnalysisName] = useState('');
-            
-            // Pagination states
-            const [campaignsPage, setCampaignsPage] = useState(1);
-            const [wastedSpendPage, setWastedSpendPage] = useState(1);
-            const [matchTypePage, setMatchTypePage] = useState(1);
-            const rowsPerPage = 10;
-
-            // Check for existing session and load analyses
-            useEffect(() => {
-                supabase.auth.getSession().then(({ data: { session } }) => {
-                    if (session) {
-                        setUser(session.user);
-                        setView('dashboard');
-                        loadAnalyses(session.user.id);
-                    }
-                });
-
-                const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-                    setUser(session?.user ?? null);
-                    if (session) {
-                        loadAnalyses(session.user.id);
-                    }
-                });
-
-                return () => subscription.unsubscribe();
-            }, []);
-
-            const loadAnalyses = async (userId) => {
-                const { data, error } = await supabase
-                    .from('analyses')
-                    .select('*')
-                    .eq('user_id', userId)
-                    .order('created_at', { ascending: false });
-                
-                if (!error && data) {
-                    setSavedAnalyses(data);
-                }
-            };
-
-            const handleAuth = async (e) => {
-                e.preventDefault();
-                setError('');
-                setAuthLoading(true);
-                
-                try {
-                    if (authView === 'signup') {
-                        if (!marketingConsent) {
-                            setError('You must agree to receive updates to create an account');
-                            setAuthLoading(false);
-                            return;
-                        }
-                        
-                        if (!email || !password) {
-                            setError('Please fill in all fields');
-                            setAuthLoading(false);
-                            return;
-                        }
-
-                        const { data, error } = await supabase.auth.signUp({
-                            email: email,
-                            password: password,
-                        });
-
-                        if (error) throw error;
-
-                        if (data.user) {
-                            const { error: profileError } = await supabase
-                                .from('user_profiles')
-                                .insert([
-                                    { 
-                                        user_id: data.user.id,
-                                        email: email,
-                                        marketing_consent: marketingConsent,
-                                        created_at: new Date().toISOString()
-                                    }
-                                ]);
-
-                            if (profileError) console.error('Error saving profile:', profileError);
-                        }
-
-                        alert('Check your email for the confirmation link!');
-                        setAuthView('login');
-                    } else {
-                        if (!email || !password) {
-                            setError('Please fill in all fields');
-                            setAuthLoading(false);
-                            return;
-                        }
-
-                        const { data, error } = await supabase.auth.signInWithPassword({
-                            email: email,
-                            password: password,
-                        });
-
-                        if (error) throw error;
-
-                        setUser(data.user);
-                        setView('dashboard');
-                        loadAnalyses(data.user.id);
-                    }
-                } catch (error) {
-                    setError(error.message);
-                } finally {
-                    setAuthLoading(false);
-                }
-            };
-
-            const handleLogout = async () => {
-                await supabase.auth.signOut();
-                setUser(null);
-                setView('landing');
-                setCurrentAnalysis(null);
-                setSavedAnalyses([]);
-            };
-
-            const handleFileUpload = async (event) => {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                if (!analysisName.trim()) {
-                    alert('Please enter a name for this analysis');
-                    return;
-                }
-
-                setLoading(true);
-                setUploadProgress(10);
-                
-                const reader = new FileReader();
-                reader.onload = async (e) => {
-                    try {
-                        setUploadProgress(30);
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        
-                        setUploadProgress(50);
-                        const firstSheetName = workbook.SheetNames[0];
-                        const worksheet = workbook.Sheets[firstSheetName];
-                        
-                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                        
-                        setUploadProgress(70);
-                        const headers = jsonData[0];
-                        const rows = jsonData.slice(1).map(row => {
-                            const obj = {};
-                            headers.forEach((header, index) => {
-                                obj[header] = row[index];
-                            });
-                            return obj;
-                        });
-                        
-                        setUploadProgress(80);
-                        const processedData = processData(rows);
-                        
-                        setUploadProgress(90);
-                        // Save to Supabase
-                        const { data: savedAnalysis, error } = await supabase
-                            .from('analyses')
-                            .insert([
-                                {
-                                    user_id: user.id,
-                                    analysis_name: analysisName,
-                                    analysis_data: processedData,
-                                    created_at: new Date().toISOString()
-                                }
-                            ])
-                            .select()
-                            .single();
-
-                        if (error) throw error;
-
-                        setUploadProgress(100);
-                        setCurrentAnalysis(processedData);
-                        setView('analysis');
-                        loadAnalyses(user.id);
-                        setAnalysisName('');
-                        setLoading(false);
-                        setUploadProgress(0);
-                    } catch (error) {
-                        console.error('Error parsing file:', error);
-                        alert('Error reading file. Please make sure it\'s a valid Excel file.');
-                        setLoading(false);
-                        setUploadProgress(0);
-                    }
-                };
-                reader.readAsArrayBuffer(file);
-            };
-
-            const processData = (rawData) => {
-                const processed = {
-                    campaigns: [],
-                    totalSpend: 0,
-                    totalSales: 0,
-                    totalOrders: 0,
-                    autoSpend: 0,
-                    manualSpend: 0,
-                    matchTypes: {},
-                    wastedSpend: []
-                };
-
-                rawData.forEach(row => {
-                    const spend = parseFloat(row['Spend'] || row['Cost'] || 0);
-                    const sales = parseFloat(row['Sales'] || row['7 Day Total Sales'] || 0);
-                    const orders = parseInt(row['Orders'] || row['7 Day Total Orders'] || 0);
-                    const clicks = parseInt(row['Clicks'] || 0);
-                    const impressions = parseInt(row['Impressions'] || 0);
-
-                    processed.totalSpend += spend;
-                    processed.totalSales += sales;
-                    processed.totalOrders += orders;
-
-                    const campaignName = row['Campaign Name'] || row['Campaign'];
-                    if (campaignName && spend > 0) {
-                        const existingCampaign = processed.campaigns.find(c => c.name === campaignName);
-                        if (existingCampaign) {
-                            existingCampaign.spend += spend;
-                            existingCampaign.sales += sales;
-                            existingCampaign.orders += orders;
-                            existingCampaign.clicks += clicks;
-                            existingCampaign.impressions += impressions;
-                        } else {
-                            processed.campaigns.push({
-                                name: campaignName,
-                                spend,
-                                sales,
-                                orders,
-                                clicks,
-                                impressions
-                            });
-                        }
-                    }
-
-                    const targeting = row['Targeting'] || row['Match Type'] || '';
-                    if (targeting.toLowerCase().includes('auto')) {
-                        processed.autoSpend += spend;
-                    } else {
-                        processed.manualSpend += spend;
-                    }
-
-                    const matchType = row['Match Type'] || 'Unknown';
-                    if (!processed.matchTypes[matchType]) {
-                        processed.matchTypes[matchType] = { spend: 0, sales: 0, orders: 0 };
-                    }
-                    processed.matchTypes[matchType].spend += spend;
-                    processed.matchTypes[matchType].sales += sales;
-                    processed.matchTypes[matchType].orders += orders;
-
-                    if (clicks >= 5 && orders === 0 && spend > 10) {
-                        processed.wastedSpend.push({
-                            target: row['Customer Search Term'] || row['Keyword'] || row['Targeting'] || 'Unknown',
-                            campaign: campaignName,
-                            spend,
-                            clicks,
-                            orders
-                        });
-                    }
-                });
-
-                processed.campaigns = processed.campaigns.map(c => ({
-                    ...c,
-                    roas: c.spend > 0 ? c.sales / c.spend : 0,
-                    acos: c.sales > 0 ? (c.spend / c.sales) * 100 : 0,
-                    ctr: c.impressions > 0 ? (c.clicks / c.impressions) * 100 : 0
-                })).sort((a, b) => b.spend - a.spend);
-
-                processed.roas = processed.totalSpend > 0 ? processed.totalSales / processed.totalSpend : 0;
-                processed.acos = processed.totalSales > 0 ? (processed.totalSpend / processed.totalSales) * 100 : 0;
-                processed.autoPercent = processed.totalSpend > 0 ? (processed.autoSpend / processed.totalSpend) * 100 : 0;
-
-                return processed;
-            };
-
-            const viewAnalysis = (analysis) => {
-                setCurrentAnalysis(analysis.analysis_data);
-                setView('analysis');
-            };
-
-            const deleteAnalysis = async (analysisId) => {
-                if (!confirm('Are you sure you want to delete this analysis?')) return;
-                
-                const { error } = await supabase
-                    .from('analyses')
-                    .delete()
-                    .eq('id', analysisId);
-
-                if (!error) {
-                    loadAnalyses(user.id);
-                }
-            };
-
-            const paginate = (array, page) => {
-                const start = (page - 1) * rowsPerPage;
-                return array.slice(start, start + rowsPerPage);
-            };
-
-            const Pagination = ({ currentPage, totalItems, onPageChange }) => {
-                const totalPages = Math.ceil(totalItems / rowsPerPage);
-                if (totalPages <= 1) return null;
-                
-                return (
-                    <div className="flex items-center justify-between mt-4 px-4 py-2 bg-gray-50 rounded">
-                        <div className="text-sm text-gray-600">
-                            Showing {((currentPage - 1) * rowsPerPage) + 1} to {Math.min(currentPage * rowsPerPage, totalItems)} of {totalItems} items
-                        </div>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => onPageChange(currentPage - 1)}
-                                disabled={currentPage === 1}
-                                className="px-3 py-1 rounded bg-blue-500 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
-                            >
-                                Previous
-                            </button>
-                            <span className="px-3 py-1">
-                                Page {currentPage} of {totalPages}
-                            </span>
-                            <button
-                                onClick={() => onPageChange(currentPage + 1)}
-                                disabled={currentPage === totalPages}
-                                className="px-3 py-1 rounded bg-blue-500 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
-                            >
-                                Next
-                            </button>
-                        </div>
-                    </div>
-                );
-            };
-
-            // LANDING PAGE
-            if (view === 'landing') {
-                return (
-                    <div className="min-h-screen bg-white">
-                        <nav className="bg-white border-b border-gray-200">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <div className="flex justify-between items-center h-16">
-                                    <h1 className="text-2xl font-bold text-blue-600">PPC Analyzer</h1>
-                                    <div className="flex gap-4">
-                                        <button
-                                            onClick={() => {
-                                                setView('auth');
-                                                setAuthView('login');
-                                            }}
-                                            className="text-gray-700 hover:text-gray-900 font-medium"
-                                        >
-                                            Login
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setView('auth');
-                                                setAuthView('signup');
-                                            }}
-                                            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 font-medium"
-                                        >
-                                            Get Started
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </nav>
-
-                        <div className="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <div className="text-center">
-                                    <h1 className="text-5xl font-bold text-gray-900 mb-6">
-                                        Optimize Your Amazon PPC Strategy
-                                    </h1>
-                                    <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-                                        Upload your Amazon advertising data and get instant insights, actionable recommendations, 
-                                        and identify wasted spend to maximize your ROAS.
-                                    </p>
-                                    <button
-                                        onClick={() => {
-                                            setView('auth');
-                                            setAuthView('signup');
-                                        }}
-                                        className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-200"
-                                    >
-                                        Start Analyzing Your Data
-                                    </button>
-                                    <p className="text-sm text-gray-500 mt-3">
-                                        🔒 100% secure. Your Amazon data is never uploaded or stored on our servers.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="py-20 bg-white">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-                                    Everything You Need to Optimize Your Amazon Ads
-                                </h2>
-                                <div className="grid md:grid-cols-3 gap-8">
-                                    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                                        <div className="text-4xl mb-4">📊</div>
-                                        <h3 className="text-xl font-semibold mb-3">Performance Dashboard</h3>
-                                        <p className="text-gray-600">
-                                            See your key metrics at a glance: total spend, sales, ROAS, ACOS, and more. 
-                                            Track auto vs manual campaigns and match type performance.
-                                        </p>
-                                    </div>
-                                    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                                        <div className="text-4xl mb-4">💡</div>
-                                        <h3 className="text-xl font-semibold mb-3">Smart Recommendations</h3>
-                                        <p className="text-gray-600">
-                                            Get AI-powered suggestions to improve your campaigns. Identify high ACOS campaigns, 
-                                            optimize match types, and improve placement strategies.
-                                        </p>
-                                    </div>
-                                    <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                                        <div className="text-4xl mb-4">💸</div>
-                                        <h3 className="text-xl font-semibold mb-3">Wasted Spend Detection</h3>
-                                        <p className="text-gray-600">
-                                            Automatically identify keywords and targets with high spend but zero conversions. 
-                                            Stop wasting money on underperforming campaigns.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="py-20 bg-gray-50">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-                                    How It Works
-                                </h2>
-                                <div className="grid md:grid-cols-3 gap-8">
-                                    <div className="text-center">
-                                        <div className="bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
-                                            1
-                                        </div>
-                                        <h3 className="text-lg font-semibold mb-2">Upload Your Data</h3>
-                                        <p className="text-gray-600">
-                                            Export your bulk Excel file from Amazon Advertising Console and upload it to our analyzer
-                                        </p>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
-                                            2
-                                        </div>
-                                        <h3 className="text-lg font-semibold mb-2">Get Instant Insights</h3>
-                                        <p className="text-gray-600">
-                                            Our algorithm analyzes your campaigns and provides detailed performance metrics and visualizations
-                                        </p>
-                                    </div>
-                                    <div className="text-center">
-                                        <div className="bg-blue-600 text-white w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
-                                            3
-                                        </div>
-                                        <h3 className="text-lg font-semibold mb-2">Take Action</h3>
-                                        <p className="text-gray-600">
-                                            Follow our recommendations to optimize bids, pause wasted spend, and improve your ROAS
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="py-20 bg-blue-600">
-                            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                                <h2 className="text-3xl font-bold text-white mb-6">
-                                    Ready to Optimize Your Amazon Advertising?
-                                </h2>
-                                <p className="text-xl text-blue-100 mb-8">
-                                    Join sellers who are already maximizing their ROAS with data-driven insights
-                                </p>
-                                <button
-                                    onClick={() => {
-                                        setView('auth');
-                                        setAuthView('signup');
-                                    }}
-                                    className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition duration-200"
-                                >
-                                    Get Started For Free
-                                </button>
-                                <p className="text-sm text-blue-100 mt-3">
-                                    🔒 Your data stays secure on your device. We never store it on our servers.
-                                </p>
-                            </div>
-                        </div>
-
-                        <footer className="bg-gray-900 text-gray-400 py-8">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                                <p>&copy; 2025 Amazon PPC Analyzer. All rights reserved.</p>
-                                <p className="text-xs mt-2 text-gray-500">🔒 Secure and private. Your data is never stored on our servers.</p>
-                            </div>
-                        </footer>
-                    </div>
-                );
-            }
-
-            // AUTH PAGE
-            if (view === 'auth') {
-                return (
-                    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
-                            <div className="text-center mb-6">
-                                <button
-                                    onClick={() => setView('landing')}
-                                    className="text-sm text-gray-600 hover:text-gray-800 mb-4"
-                                >
-                                    ← Back to Home
-                                </button>
-                                <h1 className="text-3xl font-bold text-gray-800 mb-2">Amazon PPC Analyzer</h1>
-                                <p className="text-gray-600">Optimize your advertising strategy</p>
-                            </div>
-                            
-                            <div className="flex border-b border-gray-200 mb-6">
-                                <button
-                                    className={`flex-1 py-2 text-center ${authView === 'login' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500'}`}
-                                    onClick={() => {
-                                        setAuthView('login');
-                                        setError('');
-                                    }}
-                                >
-                                    Login
-                                </button>
-                                <button
-                                    className={`flex-1 py-2 text-center ${authView === 'signup' ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-500'}`}
-                                    onClick={() => {
-                                        setAuthView('signup');
-                                        setMarketingConsent(true);
-                                        setError('');
-                                    }}
-                                >
-                                    Sign Up
-                                </button>
-                            </div>
-
-                            <form onSubmit={handleAuth} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Email
-                                    </label>
-                                    <input
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="you@example.com"
-                                        disabled={authLoading}
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Password
-                                    </label>
-                                    <input
-                                        type="password"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        placeholder="••••••••"
-                                        disabled={authLoading}
-                                    />
-                                </div>
-
-                                {authView === 'signup' && (
-                                    <>
-                                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                            <div className="flex items-start">
-                                                <input
-                                                    type="checkbox"
-                                                    id="marketing"
-                                                    checked={marketingConsent}
-                                                    onChange={(e) => setMarketingConsent(e.target.checked)}
-                                                    className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                                                />
-                                                <div className="ml-3">
-                                                    <label htmlFor="marketing" className="font-medium text-gray-900 text-sm">
-                                                        Yes, send me helpful updates and tips
-                                                    </label>
-                                                    <p className="text-xs text-gray-600 mt-1">
-                                                        Get occasional emails with PPC optimization tips, new features, and exclusive insights.
-                                                    </p>
-                                                    <p className="text-xs text-gray-700 mt-2">
-                                                        <strong>We respect your inbox</strong> - no spam, unsubscribe anytime.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            {!marketingConsent && (
-                                                <div className="mt-2 flex items-center text-red-600 text-xs">
-                                                    <span className="mr-1">⚠️</span>
-                                                    This checkbox is required to create an account
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                                            <div className="flex items-start">
-                                                <div className="text-green-600 text-xl mr-3">🔒</div>
-                                                <div>
-                                                    <h4 className="font-semibold text-green-900 text-sm mb-1">Your Data is Protected</h4>
-                                                    <ul className="text-xs text-green-800 space-y-1">
-                                                        <li>✓ All data analyzed locally in your browser</li>
-                                                        <li>✓ We never store your Amazon PPC data on our servers</li>
-                                                        <li>✓ Your information is encrypted and secure</li>
-                                                        <li>✓ We never sell or share your data with third parties</li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-
-                                {error && (
-                                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                                        {error}
-                                    </div>
-                                )}
-
-                                <button
-                                    type="submit"
-                                    disabled={authLoading}
-                                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                >
-                                    {authLoading ? 'Loading...' : (authView === 'login' ? 'Login' : 'Sign Up')}
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                );
-            }
-
-            // DASHBOARD
-            if (view === 'dashboard') {
-                return (
-                    <div className="min-h-screen bg-gray-50">
-                        <div className="bg-white shadow">
-                            <div className="max-w-7xl mx-auto px-4 py-4">
-                                <div className="flex justify-between items-center">
-                                    <h1 className="text-2xl font-bold text-gray-800">Amazon PPC Analyzer</h1>
-                                    <div className="flex items-center gap-4">
-                                        <span className="text-sm text-gray-600">{user.email}</span>
-                                        <button
-                                            onClick={handleLogout}
-                                            className="text-sm text-gray-600 hover:text-gray-800"
-                                        >
-                                            Logout
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="max-w-7xl mx-auto px-4 py-8">
-                            <div className="mb-8">
-                                <button
-                                    onClick={() => setView('upload')}
-                                    className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-200"
-                                >
-                                    ➕ Run New Analysis
-                                </button>
-                            </div>
-
-                            <div className="bg-white rounded-lg shadow">
-                                <div className="p-6">
-                                    <h2 className="text-2xl font-bold mb-6">Your Analyses</h2>
-                                    
-                                    {savedAnalyses.length === 0 ? (
-                                        <div className="text-center py-12">
-                                            <div className="text-6xl mb-4">📊</div>
-                                            <p className="text-gray-600 mb-4">No analyses yet</p>
-                                            <button
-                                                onClick={() => setView('upload')}
-                                                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-                                            >
-                                                Create Your First Analysis
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div className="grid gap-4">
-                                            {savedAnalyses.map((analysis) => (
-                                                <div key={analysis.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
-                                                    <div className="flex justify-between items-start">
-                                                        <div className="flex-1">
-                                                            <h3 className="text-lg font-semibold text-gray-900">{analysis.analysis_name}</h3>
-                                                            <p className="text-sm text-gray-500">
-                                                                {new Date(analysis.created_at).toLocaleDateString('en-US', {
-                                                                    year: 'numeric',
-                                                                    month: 'long',
-                                                                    day: 'numeric',
-                                                                    hour: '2-digit',
-                                                                    minute: '2-digit'
-                                                                })}
-                                                            </p>
-                                                            <div className="mt-2 flex gap-4 text-sm">
-                                                                <span className="text-gray-600">
-                                                                    <strong>Spend:</strong> ${analysis.analysis_data?.totalSpend?.toFixed(2) || '0.00'}
-                                                                </span>
-                                                                <span className="text-gray-600">
-                                                                    <strong>Sales:</strong> ${analysis.analysis_data?.totalSales?.toFixed(2) || '0.00'}
-                                                                </span>
-                                                                <span className="text-gray-600">
-                                                                    <strong>ROAS:</strong> {analysis.analysis_data?.roas?.toFixed(2) || '0.00'}x
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex gap-2">
-                                                            <button
-                                                                onClick={() => viewAnalysis(analysis)}
-                                                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
-                                                            >
-                                                                View
-                                                            </button>
-                                                            <button
-                                                                onClick={() => deleteAnalysis(analysis.id)}
-                                                                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm"
-                                                            >
-                                                                Delete
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            // UPLOAD PAGE
-            if (view === 'upload') {
-                return (
-                    <div className="min-h-screen bg-gray-50">
-                        <div className="bg-white shadow">
-                            <div className="max-w-7xl mx-auto px-4 py-4">
-                                <div className="flex justify-between items-center">
-                                    <h1 className="text-2xl font-bold text-gray-800">Amazon PPC Analyzer</h1>
-                                    <div className="flex items-center gap-4">
-                                        <button
-                                            onClick={() => setView('dashboard')}
-                                            className="text-sm text-gray-600 hover:text-gray-800"
-                                        >
-                                            ← Back to Dashboard
-                                        </button>
-                                        <button
-                                            onClick={handleLogout}
-                                            className="text-sm text-gray-600 hover:text-gray-800"
-                                        >
-                                            Logout
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="max-w-7xl mx-auto px-4 py-6">
-                            <div className="bg-white rounded-lg shadow p-8">
-                                <h2 className="text-2xl font-bold text-center mb-6">Upload Your Amazon PPC Data</h2>
-                                
-                                <div className="max-w-3xl mx-auto mb-8">
-                                    <div className="mb-6">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Analysis Name *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={analysisName}
-                                            onChange={(e) => setAnalysisName(e.target.value)}
-                                            placeholder="e.g., Brand Name - November 2024"
-                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            disabled={loading}
-                                        />
-                                        <p className="text-xs text-gray-500 mt-1">Give this analysis a name to help you find it later</p>
-                                    </div>
-
-                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                                        <h3 className="text-lg font-semibold text-blue-900 mb-3">📋 How to Export Your Data from Amazon</h3>
-                                        
-                                        <div className="space-y-4 text-sm text-gray-700">
-                                            <div>
-                                                <p className="font-semibold text-gray-900 mb-2">Step 1: Go to Amazon Advertising Console</p>
-                                                <p>Log into your Amazon Seller Central account and navigate to the Advertising section.</p>
-                                            </div>
-                                            
-                                            <div>
-                                                <p className="font-semibold text-gray-900 mb-2">Step 2: Access Bulk Operations</p>
-                                                <p>Click on <strong>Bulk Operations</strong> in the left sidebar or top menu.</p>
-                                            </div>
-                                            
-                                            <div>
-                                                <p className="font-semibold text-gray-900 mb-2">Step 3: Download Bulk Sheet</p>
-                                                <p>Select "Download Bulk Sheet" and choose your time range (Last 60 days recommended).</p>
-                                            </div>
-                                            
-                                            <div>
-                                                <p className="font-semibold text-gray-900 mb-2">Step 4: Select Required Data Types</p>
-                                                <p className="mb-2">Make sure to select <strong>at least these boxes</strong>:</p>
-                                                <div className="bg-white border border-gray-300 rounded p-3 ml-4">
-                                                    <ul className="space-y-1 text-xs">
-                                                        <li>✅ <strong>Sponsored Products: Targeting and Keyword Filter:</strong> Enabled & Paused</li>
-                                                        <li>✅ <strong>Paused Campaigns</strong></li>
-                                                        <li>✅ <strong>Placement Data for Campaigns</strong></li>
-                                                        <li>✅ <strong>Sponsored Products Data</strong></li>
-                                                        <li>✅ <strong>Sponsored Brands Multi-ad group data</strong></li>
-                                                        <li>✅ <strong>Sponsored Display Data</strong></li>
-                                                        <li>✅ <strong>Sponsored Products Search Term Data</strong></li>
-                                                        <li>✅ <strong>Sponsored Brands Search Term Data</strong></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            
-                                            <div>
-                                                <p className="font-semibold text-gray-900 mb-2">Step 5: Download & Upload Here</p>
-                                                <p>Click "Download" and save the Excel file (.xlsx). Then upload it below!</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    {loading && (
-                                        <div className="mb-6">
-                                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <span className="text-sm font-medium text-blue-900">Processing your data...</span>
-                                                    <span className="text-sm font-bold text-blue-900">{uploadProgress}%</span>
-                                                </div>
-                                                <div className="w-full bg-blue-200 rounded-full h-3">
-                                                    <div 
-                                                        className="bg-blue-600 h-3 rounded-full transition-all duration-300"
-                                                        style={{ width: `${uploadProgress}%` }}
-                                                    ></div>
-                                                </div>
-                                                <p className="text-xs text-blue-700 mt-2">
-                                                    {uploadProgress < 30 && "Reading file..."}
-                                                    {uploadProgress >= 30 && uploadProgress < 70 && "Parsing Excel data..."}
-                                                    {uploadProgress >= 70 && uploadProgress < 90 && "Analyzing campaigns..."}
-                                                    {uploadProgress >= 90 && "Saving analysis..."}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    <div className="text-center">
-                                        <label className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg cursor-pointer transition duration-200 shadow-lg disabled:opacity-50">
-                                            <input
-                                                type="file"
-                                                accept=".xlsx,.xls"
-                                                onChange={handleFileUpload}
-                                                className="hidden"
-                                                disabled={loading}
-                                            />
-                                            📤 Choose Your Excel File
-                                        </label>
-                                        <p className="text-xs text-gray-500 mt-3">
-                                            Your data is analyzed locally in your browser - we never store it on our servers
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            // ANALYSIS VIEW
-            if (view === 'analysis' && currentAnalysis) {
-                const data = currentAnalysis;
-                return (
-                    <div className="min-h-screen bg-gray-50">
-                        <div className="bg-white shadow">
-                            <div className="max-w-7xl mx-auto px-4 py-4">
-                                <div className="flex justify-between items-center">
-                                    <h1 className="text-2xl font-bold text-gray-800">Amazon PPC Analyzer</h1>
-                                    <div className="flex items-center gap-4">
-                                        <button
-                                            onClick={() => setView('dashboard')}
-                                            className="text-sm text-gray-600 hover:text-gray-800"
-                                        >
-                                            ← Back to Dashboard
-                                        </button>
-                                        <button
-                                            onClick={handleLogout}
-                                            className="text-sm text-gray-600 hover:text-gray-800"
-                                        >
-                                            Logout
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="max-w-7xl mx-auto px-4 py-6">
-                            <div className="mb-6 bg-white rounded-lg shadow">
-                                <div className="flex border-b">
-                                    <button
-                                        className={`px-6 py-3 font-medium ${activeTab === 'overview' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600'}`}
-                                        onClick={() => setActiveTab('overview')}
-                                    >
-                                        Overview
-                                    </button>
-                                    <button
-                                        className={`px-6 py-3 font-medium ${activeTab === 'campaigns' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600'}`}
-                                        onClick={() => setActiveTab('campaigns')}
-                                    >
-                                        Campaigns
-                                    </button>
-                                    <button
-                                        className={`px-6 py-3 font-medium ${activeTab === 'recommendations' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-600'}`}
-                                        onClick={() => setActiveTab('recommendations')}
-                                    >
-                                        Recommendations
-                                    </button>
-                                </div>
-                            </div>
-
-                            {activeTab === 'overview' && (
-                                <div className="space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                        <div className="bg-white rounded-lg shadow p-6">
-                                            <div className="text-sm text-gray-600 mb-1">Total Spend</div>
-                                            <div className="text-2xl font-bold text-gray-800">
-                                                ${data.totalSpend.toFixed(2)}
-                                            </div>
-                                        </div>
-                                        <div className="bg-white rounded-lg shadow p-6">
-                                            <div className="text-sm text-gray-600 mb-1">Total Sales</div>
-                                            <div className="text-2xl font-bold text-green-600">
-                                                ${data.totalSales.toFixed(2)}
-                                            </div>
-                                        </div>
-                                        <div className="bg-white rounded-lg shadow p-6">
-                                            <div className="text-sm text-gray-600 mb-1">ROAS</div>
-                                            <div className={`text-2xl font-bold ${data.roas >= 3 ? 'text-green-600' : data.roas >= 2 ? 'text-yellow-600' : 'text-red-600'}`}>
-                                                {data.roas.toFixed(2)}x
-                                            </div>
-                                        </div>
-                                        <div className="bg-white rounded-lg shadow p-6">
-                                            <div className="text-sm text-gray-600 mb-1">ACOS</div>
-                                            <div className={`text-2xl font-bold ${data.acos <= 25 ? 'text-green-600' : data.acos <= 40 ? 'text-yellow-600' : 'text-red-600'}`}>
-                                                {data.acos.toFixed(1)}%
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white rounded-lg shadow p-6">
-                                        <h3 className="text-lg font-semibold mb-4">Auto vs Manual Campaigns</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div>
-                                                <div className="flex justify-between mb-2">
-                                                    <span className="text-gray-600">Auto Campaigns</span>
-                                                    <span className={`font-semibold ${data.autoPercent > 10 ? 'text-red-600' : 'text-green-600'}`}>
-                                                        {data.autoPercent.toFixed(1)}%
-                                                    </span>
-                                                </div>
-                                                <div className="w-full bg-gray-200 rounded-full h-4">
-                                                    <div 
-                                                        className={`h-4 rounded-full ${data.autoPercent > 10 ? 'bg-red-500' : 'bg-green-500'}`}
-                                                        style={{ width: `${data.autoPercent}%` }}
-                                                    ></div>
-                                                </div>
-                                                <div className="text-sm text-gray-600 mt-1">
-                                                    ${data.autoSpend.toFixed(2)}
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div className="flex justify-between mb-2">
-                                                    <span className="text-gray-600">Manual Campaigns</span>
-                                                    <span className="font-semibold text-blue-600">
-                                                        {(100 - data.autoPercent).toFixed(1)}%
-                                                    </span>
-                                                </div>
-                                                <div className="w-full bg-gray-200 rounded-full h-4">
-                                                    <div 
-                                                        className="bg-blue-500 h-4 rounded-full"
-                                                        style={{ width: `${100 - data.autoPercent}%` }}
-                                                    ></div>
-                                                </div>
-                                                <div className="text-sm text-gray-600 mt-1">
-                                                    ${data.manualSpend.toFixed(2)}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {data.autoPercent > 10 && (
-                                            <div className="mt-4 bg-orange-50 border border-orange-200 rounded p-3 text-sm text-orange-800">
-                                                ⚠️ Warning: Auto campaign spend is {data.autoPercent.toFixed(1)}%. Recommended to keep it under 10% for better control.
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="bg-white rounded-lg shadow p-6">
-                                        <h3 className="text-lg font-semibold mb-4">Match Type Performance</h3>
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full">
-                                                <thead className="bg-gray-50">
-                                                    <tr>
-                                                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Match Type</th>
-                                                        <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Spend</th>
-                                                        <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Sales</th>
-                                                        <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">ROAS</th>
-                                                        <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Orders</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {Object.entries(data.matchTypes)
-                                                        .sort((a, b) => b[1].spend - a[1].spend)
-                                                        .slice((matchTypePage - 1) * rowsPerPage, matchTypePage * rowsPerPage)
-                                                        .map(([type, stats]) => {
-                                                            const roas = stats.spend > 0 ? stats.sales / stats.spend : 0;
-                                                            return (
-                                                                <tr key={type} className="border-t">
-                                                                    <td className="px-4 py-3 text-sm">{type}</td>
-                                                                    <td className="px-4 py-3 text-sm text-right">${stats.spend.toFixed(2)}</td>
-                                                                    <td className="px-4 py-3 text-sm text-right">${stats.sales.toFixed(2)}</td>
-                                                                    <td className={`px-4 py-3 text-sm text-right font-semibold ${roas >= 3 ? 'text-green-600' : roas >= 2 ? 'text-yellow-600' : 'text-red-600'}`}>
-                                                                        {roas.toFixed(2)}x
-                                                                    </td>
-                                                                    <td className="px-4 py-3 text-sm text-right">{stats.orders}</td>
-                                                                </tr>
-                                                            );
-                                                        })}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <Pagination 
-                                            currentPage={matchTypePage}
-                                            totalItems={Object.keys(data.matchTypes).length}
-                                            onPageChange={setMatchTypePage}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeTab === 'campaigns' && (
-                                <div className="bg-white rounded-lg shadow">
-                                    <div className="p-6">
-                                        <h3 className="text-lg font-semibold mb-4">Top Campaigns by Spend</h3>
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full">
-                                                <thead className="bg-gray-50">
-                                                    <tr>
-                                                        <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Campaign</th>
-                                                        <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Spend</th>
-                                                        <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Sales</th>
-                                                        <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">ROAS</th>
-                                                        <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">ACOS</th>
-                                                        <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Orders</th>
-                                                        <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">CTR</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {paginate(data.campaigns, campaignsPage).map((campaign, idx) => (
-                                                        <tr key={idx} className="border-t hover:bg-gray-50">
-                                                            <td className="px-4 py-3 text-sm max-w-xs truncate">{campaign.name}</td>
-                                                            <td className="px-4 py-3 text-sm text-right">${campaign.spend.toFixed(2)}</td>
-                                                            <td className="px-4 py-3 text-sm text-right">${campaign.sales.toFixed(2)}</td>
-                                                            <td className={`px-4 py-3 text-sm text-right font-semibold ${campaign.roas >= 3 ? 'text-green-600' : campaign.roas >= 2 ? 'text-yellow-600' : 'text-red-600'}`}>
-                                                                {campaign.roas.toFixed(2)}x
-                                                            </td>
-                                                            <td className={`px-4 py-3 text-sm text-right font-semibold ${campaign.acos <= 25 ? 'text-green-600' : campaign.acos <= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
-                                                                {campaign.acos.toFixed(1)}%
-                                                            </td>
-                                                            <td className="px-4 py-3 text-sm text-right">{campaign.orders}</td>
-                                                            <td className="px-4 py-3 text-sm text-right">{campaign.ctr.toFixed(2)}%</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <Pagination 
-                                            currentPage={campaignsPage}
-                                            totalItems={data.campaigns.length}
-                                            onPageChange={setCampaignsPage}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeTab === 'recommendations' && (
-                                <div className="space-y-6">
-                                    <div className="bg-white rounded-lg shadow p-6">
-                                        <h3 className="text-lg font-semibold mb-4">Strategic Recommendations</h3>
-                                        
-                                        {data.autoPercent > 10 && (
-                                            <div className="mb-4 bg-orange-50 border-l-4 border-orange-500 p-4">
-                                                <div className="flex items-start">
-                                                    <div className="text-orange-500 text-xl mr-3">⚠️</div>
-                                                    <div>
-                                                        <h4 className="font-semibold text-orange-800">High Auto Campaign Spend</h4>
-                                                        <p className="text-sm text-orange-700 mt-1">
-                                                            Your auto campaigns account for {data.autoPercent.toFixed(1)}% of total spend. 
-                                                            Consider moving winning terms to manual campaigns for better control.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {data.acos > 40 && (
-                                            <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4">
-                                                <div className="flex items-start">
-                                                    <div className="text-red-500 text-xl mr-3">🚨</div>
-                                                    <div>
-                                                        <h4 className="font-semibold text-red-800">High ACOS</h4>
-                                                        <p className="text-sm text-red-700 mt-1">
-                                                            Your overall ACOS is {data.acos.toFixed(1)}%. Focus on pausing underperforming keywords 
-                                                            and increasing bids on high-converting terms.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {data.wastedSpend.length > 0 && (
-                                            <div className="mb-4 bg-yellow-50 border-l-4 border-yellow-500 p-4">
-                                                <div className="flex items-start">
-                                                    <div className="text-yellow-600 text-xl mr-3">💡</div>
-                                                    <div>
-                                                        <h4 className="font-semibold text-yellow-800">Wasted Spend Identified</h4>
-                                                        <p className="text-sm text-yellow-700 mt-1">
-                                                            Found {data.wastedSpend.length} targets with 5+ clicks and no conversions. 
-                                                            Review these targets below and consider pausing or adding as negative keywords.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
-                                            <div className="flex items-start">
-                                                <div className="text-blue-500 text-xl mr-3">✓</div>
-                                                <div>
-                                                    <h4 className="font-semibold text-blue-800">Quick Action Checklist</h4>
-                                                    <ul className="text-sm text-blue-700 mt-2 space-y-1 ml-4 list-disc">
-                                                        <li>Review and pause campaigns with ACOS {'>'} 50%</li>
-                                                        <li>Harvest winning search terms from auto campaigns</li>
-                                                        <li>Add negative keywords for wasted spend targets</li>
-                                                        <li>Increase bids on exact match keywords with ROAS {'>'} 4</li>
-                                                        <li>Test Top of Search placement modifiers</li>
-                                                        <li>Review daily budgets for top-performing campaigns</li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {data.wastedSpend.length > 0 && (
-                                        <div className="bg-white rounded-lg shadow p-6">
-                                            <h3 className="text-lg font-semibold mb-4">Wasted Spend Targets</h3>
-                                            <p className="text-sm text-gray-600 mb-4">
-                                                These targets have 5+ clicks and $10+ spend with no conversions
-                                            </p>
-                                            <div className="overflow-x-auto">
-                                                <table className="w-full">
-                                                    <thead className="bg-gray-50">
-                                                        <tr>
-                                                            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Target</th>
-                                                            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">Campaign</th>
-                                                            <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Spend</th>
-                                                            <th className="px-4 py-2 text-right text-sm font-semibold text-gray-700">Clicks</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {paginate(data.wastedSpend, wastedSpendPage)
-                                                            .sort((a, b) => b.spend - a.spend)
-                                                            .map((item, idx) => (
-                                                                <tr key={idx} className="border-t hover:bg-gray-50">
-                                                                    <td className="px-4 py-3 text-sm max-w-xs truncate">{item.target}</td>
-                                                                    <td className="px-4 py-3 text-sm max-w-xs truncate">{item.campaign}</td>
-                                                                    <td className="px-4 py-3 text-sm text-right text-red-600 font-semibold">
-                                                                        ${item.spend.toFixed(2)}
-                                                                    </td>
-                                                                    <td className="px-4 py-3 text-sm text-right">{item.clicks}</td>
-                                                                </tr>
-                                                            ))}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <Pagination 
-                                                currentPage={wastedSpendPage}
-                                                totalItems={data.wastedSpend.length}
-                                                onPageChange={setWastedSpendPage}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                );
-            }
-
-            return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-        }
-
-        ReactDOM.render(<AmazonPPCAnalyzer />, document.getElementById('root'));
-    </script>
+        return () => subscription.unsubscribe();
+      }, []);
+      
+      if (loading) {
+        return (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '100vh',
+            flexDirection: 'column',
+            gap: '1rem'
+          }}>
+            <div className="loader"></div>
+            <p style={{ color: '#666' }}>Loading PPC Analyzer...</p>
+          </div>
+        );
+      }
+      
+      return <App session={session} supabase={supabaseClient} />;
+    }
+    
+    root.render(<AppWrapper />);
+  </script>
 </body>
 </html>
