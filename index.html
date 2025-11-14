@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PPC Analyzer - Amazon Advertising Analytics</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React and ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  
+  <!-- Babel Standalone for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Recharts - correct CDN -->
+  <script src="https://unpkg.com/recharts@2.5.0/dist/Recharts.js"></script>
+  
+  <!-- SheetJS (xlsx) -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    #root {
+      min-height: 100vh;
+    }
+    
+    /* Loading spinner */
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    // Wait for all libraries to load
+    window.addEventListener('load', function() {
+      // Initialize Supabase client
+      const { createClient } = supabase;
+      const SUPABASE_URL = 'https://qlqqdrnddwtzguqgtrub.supabase.co';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFscXFkcm5kZHd0emd1cWd0cnViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwNjIyMzMsImV4cCI6MjA3ODYzODIzM30.UllszW_ETPYHNGBjOKPR6wJD4lHQZPiQ-vJCF9h8wWc';
+      
+      const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+      
+      // Export for App.js
+      window.supabaseClient = supabaseClient;
+      window.Recharts = Recharts;
+      
+      // Simple icon components (using emoji for now - stable and always works)
+      window.LucideIcons = {
+        Upload: ({ className }) => <span className={className}>📤</span>,
+        TrendingUp: ({ className }) => <span className={className}>📈</span>,
+        TrendingDown: ({ className }) => <span className={className}>📉</span>,
+        DollarSign: ({ className }) => <span className={className}>💲</span>,
+        Target: ({ className }) => <span className={className}>🎯</span>,
+        MousePointer: ({ className }) => <span className={className}>👆</span>,
+        AlertTriangle: ({ className }) => <span className={className}>⚠️</span>,
+        CheckCircle: ({ className }) => <span className={className}>✅</span>,
+        XCircle: ({ className }) => <span className={className}>❌</span>,
+        Filter: ({ className }) => <span className={className}>🔍</span>,
+        Search: ({ className }) => <span className={className}>🔎</span>,
+        Download: ({ className }) => <span className={className}>⬇️</span>,
+        ChevronDown: ({ className }) => <span className={className}>▼</span>,
+        ChevronRight: ({ className }) => <span className={className}>▶</span>,
+        ArrowUpDown: ({ className }) => <span className={className}>↕️</span>,
+        Settings: ({ className }) => <span className={className}>⚙️</span>,
+        Loader2: ({ className }) => <span className={className}>⏳</span>,
+        FileSpreadsheet: ({ className }) => <span className={className}>📊</span>,
+      };
+      
+      // Load and render App
+      const script = document.createElement('script');
+      script.type = 'text/babel';
+      script.src = './App.js';
+      script.onload = function() {
+        const { useState, useEffect } = React;
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        
+        // Main component wrapper to handle Supabase auth state
+        function AppWrapper() {
+          const [loading, setLoading] = useState(true);
+          const [session, setSession] = useState(null);
+          
+          useEffect(() => {
+            // Get initial session
+            supabaseClient.auth.getSession().then(({ data: { session } }) => {
+              setSession(session);
+              setLoading(false);
+            });
+            
+            // Listen for auth changes
+            const {
+              data: { subscription },
+            } = supabaseClient.auth.onAuthStateChange((_event, session) => {
+              setSession(session);
+            });
+            
+            return () => subscription.unsubscribe();
+          }, []);
+          
+          if (loading) {
+            return (
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: '100vh',
+                flexDirection: 'column',
+                gap: '1rem'
+              }}>
+                <div className="loader"></div>
+                <p style={{ color: '#666' }}>Loading PPC Analyzer...</p>
+              </div>
+            );
+          }
+          
+          return <App session={session} supabase={supabaseClient} />;
+        }
+        
+        root.render(<AppWrapper />);
+      };
+      document.body.appendChild(script);
+    });
+  </script>
+</body>
+</html>
