@@ -605,23 +605,77 @@
 
                     <div className="max-w-7xl mx-auto px-4 py-6">
                         {!data && (
-                            <div className="bg-white rounded-lg shadow p-8 text-center">
-                                <h2 className="text-xl font-semibold mb-4">Upload Your Amazon PPC Data</h2>
-                                <p className="text-gray-600 mb-6">
-                                    Upload your bulk CSV file from Amazon Advertising to get started
-                                </p>
-                                <label className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg cursor-pointer transition duration-200">
-                                    <input
-                                        type="file"
-                                        accept=".csv"
-                                        onChange={handleFileUpload}
-                                        className="hidden"
-                                    />
-                                    Choose CSV File
-                                </label>
-                                {loading && (
-                                    <div className="mt-4 text-blue-600">Processing your data...</div>
-                                )}
+                            <div className="bg-white rounded-lg shadow p-8">
+                                <h2 className="text-2xl font-bold text-center mb-6">Upload Your Amazon PPC Data</h2>
+                                
+                                {/* Instructions Section */}
+                                <div className="max-w-3xl mx-auto mb-8">
+                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                                        <h3 className="text-lg font-semibold text-blue-900 mb-3">📋 How to Export Your Data from Amazon</h3>
+                                        
+                                        <div className="space-y-4 text-sm text-gray-700">
+                                            <div>
+                                                <p className="font-semibold text-gray-900 mb-2">Step 1: Go to Amazon Advertising Console</p>
+                                                <p>Log into your Amazon Seller Central account and navigate to the Advertising section.</p>
+                                            </div>
+                                            
+                                            <div>
+                                                <p className="font-semibold text-gray-900 mb-2">Step 2: Access Bulk Operations</p>
+                                                <p>Click on <strong>Bulk Operations</strong> in the left sidebar or top menu.</p>
+                                            </div>
+                                            
+                                            <div>
+                                                <p className="font-semibold text-gray-900 mb-2">Step 3: Download Bulk Sheet</p>
+                                                <p>Select "Download Bulk Sheet" and choose your time range (Last 60 days recommended).</p>
+                                            </div>
+                                            
+                                            <div>
+                                                <p className="font-semibold text-gray-900 mb-2">Step 4: Select Required Data Types</p>
+                                                <p className="mb-2">Make sure to select <strong>at least these boxes</strong>:</p>
+                                                <div className="bg-white border border-gray-300 rounded p-3 ml-4">
+                                                    <ul className="space-y-1 text-xs">
+                                                        <li>✅ <strong>Sponsored Products: Targeting and Keyword Filer:</strong> Enabled & Paused</li>
+                                                        <li>✅ <strong>Paused Campaigns</strong></li>
+                                                        <li>✅ <strong>Placement Data for Campaigns</strong></li>
+                                                        <li>✅ <strong>Sponsored Products Data</strong></li>
+                                                        <li>✅ <strong>Sponsored Brands Multi-ad group data</strong></li>
+                                                        <li>✅ <strong>Sponsored Display Data</strong></li>
+                                                        <li>✅ <strong>Sponsored Products Search Term Data</strong></li>
+                                                        <li>✅ <strong>Sponsored Brands Search Term Data</strong></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            
+                                            <div>
+                                                <p className="font-semibold text-gray-900 mb-2">Step 5: Download & Upload Here</p>
+                                                <p>Click "Download" and save the CSV file. Then upload it below to get your analysis!</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Upload Button */}
+                                    <div className="text-center">
+                                        <label className="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg cursor-pointer transition duration-200 shadow-lg">
+                                            <input
+                                                type="file"
+                                                accept=".csv"
+                                                onChange={handleFileUpload}
+                                                className="hidden"
+                                            />
+                                            📤 Choose Your CSV File
+                                        </label>
+                                        <p className="text-xs text-gray-500 mt-3">
+                                            Your data is analyzed locally in your browser - we never store it on our servers
+                                        </p>
+                                    </div>
+                                    
+                                    {loading && (
+                                        <div className="mt-6 text-center">
+                                            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                            <p className="text-blue-600 mt-2 font-semibold">Processing your data...</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
 
